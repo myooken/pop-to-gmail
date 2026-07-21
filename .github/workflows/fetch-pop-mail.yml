@@ -1,0 +1,42 @@
+name: Fetch POP mail into Gmail
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 23 * * *" # 08:00 JST
+    - cron: "0 8 * * *" # 17:00 JST
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore processed-UID state
+        uses: actions/cache@v4
+        with:
+          path: state
+          key: pop-state-${{ github.run_id }}
+          restore-keys: |
+            pop-state-
+
+      - name: Fetch POP mail and import into Gmail
+        env:
+          POP_HOST: ${{ secrets.POP_HOST }}
+          POP_PORT: ${{ secrets.POP_PORT }}
+          POP_USER: ${{ secrets.POP_USER }}
+          POP_PASSWORD: ${{ secrets.POP_PASSWORD }}
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+        run: python scripts/fetch_pop_to_gmail.py
