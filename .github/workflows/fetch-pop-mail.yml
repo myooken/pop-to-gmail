@@ -2,9 +2,9 @@ name: Fetch POP mail into Gmail
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: "0 23 * * *" # 08:00 JST
-    - cron: "0 8 * * *" # 17:00 JST
+  # schedule:
+  #   - cron: "0 23 * * *" # 08:00 JST
+  #   - cron: "0 8 * * *" # 17:00 JST
 
 permissions:
   contents: read
